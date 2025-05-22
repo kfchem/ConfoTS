@@ -1,7 +1,9 @@
-__version__ = "20230500701"
+__version__ = "2025041201"
 import datetime
 import statistics
 from pathlib import Path
+
+USE_G16SUB = False
 
 atom_symbols = [
     "",
@@ -409,22 +411,42 @@ if len(unknown_err["paths"]) != 0:
     print()
 
 if len(que_qsub_ps) != 0:
-    with Path("atmqsubs.sh").open("w") as f:
-        f.write("#!/bin/sh\n\n")
-        if Path("_batch_log").exists():
-            f.write("eval date >> ./_batch_log/atmqsubs.log\n\n")
+    if USE_G16SUB:
+        with Path("atmg16subs.sh").open("w") as f:
+            f.write("#!/bin/sh\n\n")
+            f.write("eval date >> atmg16subs.out\n\n")
             sh_ls = [
-                "eval qsub -e ./_batch_log/ -o ./_batch_log/ {} >> ./_batch_log/atmqsubs.log\n".format(que_qsub_p.name)
-                for que_qsub_p in que_qsub_ps
+                "eval g16sub -o log {} >> atmg16subs.out\n".format(p.with_suffix(".gjf").name) for p in que_qsub_ps
             ]
-        else:
-            f.write("eval date >> atmqsubs.out\n\n")
-            sh_ls = ["eval qsub {} >> atmqsubs.out\n".format(que_qsub_p.name) for que_qsub_p in que_qsub_ps]
-        f.writelines(sh_ls)
-        log_print("A script file was created. Please excute the following command.")
-        log_print("sh atmqsubs.sh")
-        with log_path.open("a") as f:
-            sh_ls = ["the contents are as follows\n"] + sh_ls
-            f.writelines(["{} {}".format(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), _l) for _l in sh_ls])
+            f.writelines(sh_ls)
+            log_print("A script file was created. Please excute the following command.")
+            log_print("sh atmg16subs.sh")
+            with log_path.open("a") as f:
+                sh_ls = ["the contents are as follows\n"] + sh_ls
+                f.writelines(
+                    ["{} {}".format(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), _l) for _l in sh_ls]
+                )
+    else:
+        with Path("atmqsubs.sh").open("w") as f:
+            f.write("#!/bin/sh\n\n")
+            if Path("_batch_log").exists():
+                f.write("eval date >> ./_batch_log/atmqsubs.log\n\n")
+                sh_ls = [
+                    "eval qsub -e ./_batch_log/ -o ./_batch_log/ {} >> ./_batch_log/atmqsubs.log\n".format(
+                        que_qsub_p.name
+                    )
+                    for que_qsub_p in que_qsub_ps
+                ]
+            else:
+                f.write("eval date >> atmqsubs.out\n\n")
+                sh_ls = ["eval qsub {} >> atmqsubs.out\n".format(que_qsub_p.name) for que_qsub_p in que_qsub_ps]
+            f.writelines(sh_ls)
+            log_print("A script file was created. Please excute the following command.")
+            log_print("sh atmqsubs.sh")
+            with log_path.open("a") as f:
+                sh_ls = ["the contents are as follows\n"] + sh_ls
+                f.writelines(
+                    ["{} {}".format(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), _l) for _l in sh_ls]
+                )
 else:
     log_print("There is no resubmission.")
