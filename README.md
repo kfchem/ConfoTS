@@ -53,8 +53,8 @@ After execution, the workflow will generate a structured set of output files. Be
 004_mapped_inputs       # Atom-mapped structures of reactants and products
 005_mae_inputs          # Structures prepared for Macromodel input
 
-011_reactant            # XYZ format structures of reactants
-012_product             # XYZ format structures of products
+011_reactant            # Structures of reactants
+012_product             # Structures of products
 021_reactant_sdf        # SDF format structures of reactants
 022_product_sdf         # SDF format structures of products
 030_solvent             # Solvent definitions
@@ -110,18 +110,18 @@ After execution, the workflow will generate a structured set of output files. Be
 
 ## 📦 Requirements
 
-- Python 3.9+
-- [ACCeL](https://github.com/kfchem/accel) >= 0.3.0
-- [acceltools](https://github.com/kfchem/acceltools) >= 0.2.0
+- Python 3.9 or higher
+- [ACCeL](https://github.com/kfchem/accel) version 0.3.0 or later
+- [acceltools](https://github.com/kfchem/acceltools) version 0.2.0 or later
 - Python libraries: `rdkit`, `matplotlib`
-- External software:
 
-  - [ORCA](https://orcaforum.kofo.mpg.de/) for NEB calculation
-  - [MacroModel](https://www.schrodinger.com/products/macromodel) for confomer generation
-  - [xtb](https://github.com/grimme-lab/xtb) for NEB calcutaion and pre-DFT optimization
-  - [Gaussian 16](https://gaussian.com/) for DFT calculation
-  - [OpenPBS](https://www.openpbs.org/) for job scheduler
-  - [RDKit](https://www.openpbs.org/) for initial 3D structure generation
+- External software:
+  - [ORCA](https://orcaforum.kofo.mpg.de/) for NEB calculations
+  - [MacroModel](https://www.schrodinger.com/products/macromodel) for conformer generation
+  - [xtb](https://github.com/grimme-lab/xtb) for NEB calculations and pre-DFT optimization
+  - [Gaussian 16](https://gaussian.com/) for DFT calculations
+  - [OpenPBS](https://www.openpbs.org/) for job scheduling
+  - [RDKit](https://www.rdkit.org/) for initial 3D structure generation
 
 ---
 
