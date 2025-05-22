@@ -1,0 +1,9 @@
+%chk=#NAME#.chk
+#p #MODEL_OPT# irc=(#DIRECTION#,CalcFC,maxpoints=500,stepsize=10,maxcycle=500,ReCalc=5,LQA,tight)
+
+#NAME#
+
+#CHG# #MULT#
+#AXYZ#
+
+

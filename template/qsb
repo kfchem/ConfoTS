@@ -1,0 +1,39 @@
+#!/bin/sh
+# version:2021073101
+
+if [ $# -eq 1 ]; then
+    counter=$1
+else
+    echo How many jobs to submit:
+    read counter
+fi
+
+if [ $counter -gt 0 ]; then
+    counter=$((counter+1))
+else
+    counter=$((counter-1))
+fi
+
+mkdir -p _batch_log
+eval env LC_ALL=c date >> ./_batch_log/qsb.log
+
+for file in `find *.qsh`; do
+    counter=$((counter-1))
+    if [ $counter = 0 ]; then
+        break
+    fi
+    if [ `grep ${file} ./_batch_log/qsb.log`  ]; then
+        echo ${file} has already been submitted.
+        counter=$((counter+1))
+    else
+        eval qsub -e ./_batch_log/ -o ./_batch_log/ ${file} >> ./_batch_log/pbs.log
+        echo ${file} >> ./_batch_log/qsb.log
+        echo submitted ${file}
+    fi
+done
+if [ $counter -eq 0 ]; then
+    echo Jobs were submitted. There are still unsubmitted jobs.
+else
+    echo All jobs were submitted.
+fi
+

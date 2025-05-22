@@ -1,0 +1,22 @@
+%chk=#NAME#.chk
+#p #MODEL_OPT# opt=(QST3,tight) freq=noraman
+
+#NAME#_R
+
+#CHG# #MULT#
+#DATA[RAXYZ]#
+
+#NAME#_P
+
+#CHG# #MULT#
+#DATA[PAXYZ]#
+
+#NAME#
+
+#CHG# #MULT#
+#AXYZ#
+
+--Link1--
+%chk=#NAME#.chk
+#p geom=allcheck #MODEL_SP# #SOLVENT_KEY#
+

@@ -1,0 +1,8 @@
+!#XTB_KEY# opt PAL2
+%geom
+maxiter 999
+end
+*xyz #CHG# #MULT#
+#AXYZ#
+*
+

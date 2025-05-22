@@ -1,0 +1,12 @@
+%chk=#NAME#.chk
+#p #MODEL_OPT# opt=tight freq=noraman
+
+#NAME#
+
+#CHG# #MULT#
+#AXYZ#
+
+--Link1--
+%chk=#NAME#.chk
+#p geom=allcheck #MODEL_SP# #SOLVENT_KEY#
+

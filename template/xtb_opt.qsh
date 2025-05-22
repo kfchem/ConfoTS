@@ -1,0 +1,32 @@
+#!/bin/bash
+#PBS -N #NAME#
+#PBS -q batch
+#PBS -l select=1:ncpus=2:mem=6gb
+#PBS -l walltime=01:00:00
+
+ncpus=2
+
+XTBHOME=/app/xtb
+XTBPATH=${XTBHOME}/share/xtb:${XTBHOME}
+export XTBPATH
+
+export OMP_STACKSIZE=5G
+export OMP_NUM_THREADS=$ncpus,1
+export OMP_MAX_ACTIVE_LEVELS=1
+
+ulimit -s unlimited
+
+cd $PBS_O_WORKDIR
+tdir=$(mktemp -d /dev/shm/xtb.XXXXXXXX)
+trap "rm -rf $tdir" EXIT
+
+cp $PBS_JOBNAME.xyz $tdir
+cd $tdir
+
+${XTBHOME}/bin/xtb --gfn #XTB_VER# $PBS_JOBNAME.xyz -c #CHG# #UHF_KEY# -P $ncpus --opt --namespace $PBS_JOBNAME &> $PBS_JOBNAME.out
+
+sleep 0.1
+cp $PBS_JOBNAME.out $PBS_O_WORKDIR
+cp $PBS_JOBNAME.xtbopt.xyz $PBS_O_WORKDIR
+cp $PBS_JOBNAME.xtbopt.log $PBS_O_WORKDIR
+

@@ -1,0 +1,8 @@
+#!/bin/bash
+#PBS -N #NAME#
+#PBS -q mm
+#PBS -l select=1:ncpus=0:mem=0gb
+#PBS -l walltime=72:00:00
+
+cd $PBS_O_WORKDIR
+/app/schrodinger/macromodel -LOCAL -WAIT $PBS_JOBNAME.com

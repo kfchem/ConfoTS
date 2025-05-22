@@ -1,0 +1,12 @@
+!#XTB_KEY# #NEB_KEY# PAL4
+%geom
+maxiter 999
+end
+%neb
+neb_end_xyzfile "#DATA[mate_name]#.xyz"
+nimages #NIMAGES#
+end
+*xyz #CHG# #MULT#
+#AXYZ#
+*
+

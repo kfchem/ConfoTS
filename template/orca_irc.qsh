@@ -1,0 +1,31 @@
+#!/bin/bash
+#PBS -N #NAME#
+#PBS -q batch
+#PBS -l select=1:ncpus=4:mem=12gb
+#PBS -l walltime=02:00:00
+
+export PATH=/app/openmpi-4.1.1/bin:$PATH
+export LD_LIBRARY_PATH=/app/openmpi-4.1.1/lib:$LD_LIBRARY_PATH
+
+XTBHOME=/app/xtb
+XTBPATH=${XTBHOME}/share/xtb:${XTBHOME}
+export XTBPATH
+
+export RSH_COMMAND="/usr/bin/ssh -x"
+export PATH=/app/orca:$PATH
+
+tdir=$(mktemp -d /dev/shm/orca.XXXXXXXX)
+trap "rm -rf $tdir" EXIT
+
+cp $PBS_O_WORKDIR/$PBS_JOBNAME.inp $tdir/
+
+cat ${PBS_NODEFILE} > $tdir/$PBS_JOBNAME.nodes
+
+cd $tdir
+
+/app/orca/orca $tdir/$PBS_JOBNAME.inp >> $PBS_O_WORKDIR/$PBS_JOBNAME.out
+
+sleep 0.1
+cp $tdir/*.xyz $PBS_O_WORKDIR
+cp $tdir/$PBS_JOBNAME.out $PBS_O_WORKDIR
+

@@ -1,0 +1,19 @@
+#!/bin/csh
+#version:2024030101
+#PBS -N #NAME#
+#PBS -q APC
+#PBS -l select=1:ncpus=7:mem=21gb
+
+source /etc/profile.d/modules.csh
+module load g16/c01
+
+setenv GAUSS_PDEF $NCPUS
+setenv GAUSS_MDEF 20GB
+
+cd $PBS_O_WORKDIR
+rung16 $PBS_JOBNAME.gjf $PBS_JOBNAME.log
+
+setenv GAUSS_MEMDEF $GAUSS_MDEF
+#formchk $PBS_JOBNAME.chk $PBS_JOBNAME.fchk
+#xz -f -e --threads=$NCPUS $PBS_JOBNAME.fchk
+rm -f $PBS_JOBNAME.chk

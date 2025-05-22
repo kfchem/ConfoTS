@@ -1,0 +1,9 @@
+%chk=#NAME#.chk
+#p #MODEL_SP# #SOLVENT_KEY#
+
+#NAME#
+
+#CHG# #MULT#
+#AXYZ#
+
+

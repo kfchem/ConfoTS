@@ -1,0 +1,9 @@
+!#XTB_KEY# IRC PAL4
+%irc
+MaxIter 256
+Direction #DIRECTION#
+end
+*xyz #CHG# #MULT#
+#AXYZ#
+*
+

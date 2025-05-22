@@ -1,0 +1,29 @@
+#!/bin/bash
+#PBS -N #NAME#
+#PBS -q batch
+#PBS -l select=1:ncpus=4:mem=12gb
+#PBS -l walltime=72:00:00
+
+tdir=$(mktemp -d /dev/shm/g16.XXXXXXXX)
+
+g16root="/app"
+GAUSS_SCRDIR=$tdir
+GAUSS_PDEF=$NCPUS
+GAUSS_MDEF=11GB
+GAUSS_MEMDEF=11GB
+
+export g16root
+export GAUSS_SCRDIR
+export GAUSS_PDEF
+export GAUSS_MDEF
+. $g16root/g16/bsd/g16.profile
+
+cd $PBS_O_WORKDIR
+g16 $PBS_JOBNAME.gjf
+
+export GAUSS_MEMDEF
+# formchk $PBS_JOBNAME.chk $PBS_JOBNAME.fchk
+# xz -f -e --threads=$NCPUS $PBS_JOBNAME.fchk
+rm -f $PBS_JOBNAME.chk
+
+rm -rf $tdir
