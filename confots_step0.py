@@ -1,4 +1,4 @@
-__version__ = "2025020401"
+__version__ = "2025052201"
 import configparser
 import json
 from collections import defaultdict
@@ -9,8 +9,6 @@ from accel.util import Execmd, Log
 from accel.util.constants import Elements
 from rdkit import Chem
 from rdkit.Chem import AllChem
-
-Execmd.add("sdconvert", r"/app/schrodinger/utilities/sdconvert")
 
 config = configparser.ConfigParser()
 
@@ -25,13 +23,15 @@ for p in pdir.glob("*.ini"):
 config.read_string("".join(config_ls))
 cfg = config["USER"]
 
+Execmd.add("sdconvert", Path(cfg.get("sdconvert_path")).expanduser().resolve())
+
 max_mw = cfg.getint("max_mw")
 lewis_distance_scaling = cfg.getfloat("lewis_distance_scaling")
 
 Log.console(show=cfg.getboolean("console_show"))
 Log.file(pdir.joinpath("_" + Path(__file__).stem).with_suffix(".out"))
 Log.write(f"{Path(__file__).absolute()}: version {__version__}")
-Log.write("Starting ACCeL NEB Step0")
+Log.write("Starting ConfoTS Step0")
 
 alphabets = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
@@ -51,8 +51,6 @@ solvents = {
     "dichloroethane ": ["dichloroethane", "ch2clch2cl", "dce"],
 }
 
-if (pdir / "Need_HPC.txt").exists() or (pdir / "Need_DFT_on_SuperComputer.txt").exists():
-    cfg["need_hpc"] = "True"
 
 for rxn_path in pdir.glob("*.rxn"):
     pdir.joinpath("reactant").mkdir(exist_ok=True)
@@ -267,14 +265,10 @@ for c in inp_box.get():
 
 
 mol_wt_list = [c.atoms.mw for c in Box([pdir / "011_reactant", pdir / "012_product"]).read_atoms().get()]
-if len(set(mol_wt_list)) != 1:
+if len(set(mol_wt_list)) != 1 or max_mw < max(mol_wt_list):
     Log.write("Check the input structures again.")
     config["DEFAULT"]["keep_calc"] = "False"
     exit()
-
-if max_mw < max(mol_wt_list):
-    Log.write("Need_HPC")
-    config["DEFAULT"]["need_hpc"] = "True"
 
 solvent_files = list(pdir.glob("[Ss][Oo][Ll][Vv][Ee][Nn][Tt]*"))
 with (pdir / "template" / "solvent_key.txt").open() as f:
@@ -306,4 +300,4 @@ with sdir.joinpath("solvent_key").open("w") as f:
 with (pdir / "099_config" / "config.ini").open("w") as f:
     config.write(f)
 
-Log.write("ACCel NEB Step0 terminated normally")
+Log.write("ConfoTS Step0 terminated normally")

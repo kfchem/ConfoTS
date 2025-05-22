@@ -1,4 +1,4 @@
-__version__ = "2023051801"
+__version__ = "2025052201"
 import configparser
 from pathlib import Path
 
@@ -16,14 +16,14 @@ tdir = pdir / "template"
 Log.console(show=cfg.getboolean("console_show"))
 Log.file(pdir.joinpath("_" + Path(__file__).stem).with_suffix(".out"))
 Log.write(f"{Path(__file__).absolute()}: version {__version__}")
-Log.write("Starting ACCeL NEB Step5")
+Log.write("Starting ConfoTS Step5")
 
 if not cfg.getboolean("keep_calc"):
-    Log.write("ACCeL NEB Step5 is deactivated")
+    Log.write("ConfoTS Step5 is deactivated")
     exit()
 
 if not cfg.getboolean("run_irc"):
-    Log.write("ACCeL NEB Step5 is deactivated")
+    Log.write("ConfoTS Step5 is deactivated")
     exit()
 
 with pdir.joinpath("030_solvent").joinpath("solvent_key").open() as f:
@@ -58,9 +58,9 @@ for cs in box.get().labels.values():
         link=False,
         arg={"SOLVENT_KEY": solvent_key, "MODEL_OPT": cfg["model_opt"], "MODEL_SP": cfg["model_sp"]},
     )
-    terminal.write_input(tdir / "g16_hpc.qsh", pdir / "502_terminal_opt", link=False)
+    terminal.write_input(tdir / "g16.qsh", pdir / "502_terminal_opt", link=False)
 
 SeriesBox(box).write_trjxyz(pdir / "501_irc_trj", order_key="rxn_coordinate")
 box.export_data(pdir / "501_irc_trj" / pdir.name)
 
-Log.write("ACCel NEB Step5 terminated normally")
+Log.write("ConfoTS Step5 terminated normally")

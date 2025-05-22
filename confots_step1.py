@@ -1,4 +1,4 @@
-__version__ = "2025020401"
+__version__ = "2025052201"
 import configparser
 import copy
 import json
@@ -13,8 +13,6 @@ from accel.util.matrix import Matrix
 from acceltools.plot import PlotBox
 from acceltools.series import SeriesBox
 
-Execmd.add("sdconvert", r"/app/schrodinger/utilities/sdconvert")
-
 pdir = Path().cwd()
 tdir = pdir / "template"
 
@@ -22,13 +20,15 @@ config = configparser.ConfigParser()
 config.read(pdir / "099_config" / "config.ini")
 cfg = config["USER"]
 
+Execmd.add("sdconvert", Path(cfg.get("sdconvert_path")).expanduser().resolve())
+
 Log.console(show=cfg.getboolean("console_show"))
 Log.file(pdir.joinpath("_" + Path(__file__).stem).with_suffix(".out"))
 Log.write(f"{Path(__file__).absolute()}: version {__version__}")
-Log.write("Starting ACCeL NEB Step1")
+Log.write("Starting ConfoTS Step1")
 
 if not cfg.getboolean("keep_calc"):
-    Log.write("ACCeL NEB Step1 is deactivated")
+    Log.write("ConfoTS Step1 is deactivated")
     exit()
 
 energy_limit_to_empopt = cfg.getfloat("energy_limit_to_empopt")
@@ -310,19 +310,7 @@ Log.write(f"path_flag: {path_flag}")
 
 rp_box.energy_limit(energy_limit_to_neb, max_limit=max_limit_to_neb)
 
-if len(rp_box.get()) > max_limit_for_local_reapro_in_total:
-    config["DEFAULT"]["need_hpc"] = "True"
-
 g16_qsh_file = "g16.qsh"
-rqbs_port = cfg.getint("rqbs_port")
-if 49152 <= rqbs_port and rqbs_port <= 65535:
-    g16_qsh_file = "g16_rqbs.qsh"
-    config["DEFAULT"]["need_hpc"] = "False"
-if cfg.getboolean("need_hpc"):
-    g16_qsh_file = "g16_hpc.qsh"
-
-if cfg.getboolean("no_chk"):
-    g16_qsh_file = g16_qsh_file.split(".")[0] + "_nochk.qsh"
 
 g16_opt_file = "g16_opt.gjf"
 g16_tsopt_file = "g16_tsopt.gjf"
@@ -762,7 +750,7 @@ ts_box.write_input(
     pdir / "203_dft_ts_opt",
     arg={"SOLVENT_KEY": solvent_key, "MODEL_OPT": cfg["model_opt"], "MODEL_SP": cfg["model_sp"]},
 )
-ts_box.write_input(tdir / g16_qsh_file, pdir / "203_dft_ts_opt", arg={"PORT": rqbs_port})
+ts_box.write_input(tdir / g16_qsh_file, pdir / "203_dft_ts_opt")
 ts_box.search(pdir / "125_emp_ts_freq", suffix=".out").plugin.xtb.read_free_energy()
 
 (pdir / "126_emp_ts_data").mkdir(exist_ok=True)
@@ -775,14 +763,14 @@ low_r_box.write_input(
     pdir / "201_dft_rea_opt",
     arg={"SOLVENT_KEY": solvent_key, "MODEL_OPT": cfg["model_opt"], "MODEL_SP": cfg["model_sp"]},
 )
-low_r_box.write_input(tdir / g16_qsh_file, pdir / "201_dft_rea_opt", arg={"PORT": rqbs_port})
+low_r_box.write_input(tdir / g16_qsh_file, pdir / "201_dft_rea_opt")
 low_p_box = Box(low_rp_box.get().has_data("role", "product"))
 low_p_box.write_input(
     tdir / g16_opt_file,
     pdir / "202_dft_pro_opt",
     arg={"SOLVENT_KEY": solvent_key, "MODEL_OPT": cfg["model_opt"], "MODEL_SP": cfg["model_sp"]},
 )
-low_p_box.write_input(tdir / g16_qsh_file, pdir / "202_dft_pro_opt", arg={"PORT": rqbs_port})
+low_p_box.write_input(tdir / g16_qsh_file, pdir / "202_dft_pro_opt")
 low_rp_box.write_xyz(pdir / "114_emp_reapro_freq", centering=False)
 low_rp_box.write_input(
     tdir / "xtb_freq.qsh", pdir / "114_emp_reapro_freq", arg={"XTB_VER": str(XTB_VER), "UHF_KEY": UHF_KEY}
@@ -803,7 +791,7 @@ plot_mc = Box(ts_box.get() + low_rp_box.get())
 PlotBox(plot_mc).diagram(pdir / "130_energy_diagram_xtb" / stem_name)
 plot_mc.only_minimum().export_data(pdir / "130_energy_diagram_xtb" / stem_name)
 
-if cfg.getboolean("need_hpc"):
+if cfg.getboolean("helper_script"):
     shutil.copy(tdir / "atm.py", pdir / "201_dft_rea_opt" / "atm.py")
     shutil.copy(tdir / "qsb", pdir / "201_dft_rea_opt" / "qsb")
     shutil.copy(tdir / "atm.py", pdir / "202_dft_pro_opt" / "atm.py")
@@ -814,4 +802,4 @@ if cfg.getboolean("need_hpc"):
 with (pdir / "099_config" / "config.ini").open("w") as f:
     config.write(f)
 
-Log.write("ACCel NEB Step1 terminated normally")
+Log.write("ConfoTS Step1 terminated normally")

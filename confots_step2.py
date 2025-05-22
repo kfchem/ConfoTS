@@ -1,4 +1,4 @@
-__version__ = "2022111301"
+__version__ = "2025052201"
 import configparser
 from pathlib import Path
 
@@ -13,14 +13,10 @@ cfg = config["USER"]
 Log.console(show=cfg.getboolean("console_show"))
 Log.file(pdir.joinpath("_" + Path(__file__).stem).with_suffix(".out"))
 Log.write(f"{Path(__file__).absolute()}: version {__version__}")
-Log.write("Starting ACCeL NEB Step2")
+Log.write("Starting ConfoTS Step2")
 
 if not cfg.getboolean("keep_calc"):
-    Log.write("ACCeL NEB Step2 is deactivated")
-    exit()
-
-if cfg.getboolean("need_hpc"):
-    Log.write("ACCeL NEB Step2 is deactivated")
+    Log.write("ConfoTS Step2 is deactivated")
     exit()
 
 dft_box = Box()
@@ -42,4 +38,4 @@ dft_box.export_data(pdir / "204_dft_data" / dft_box.get().get().name.split("_")[
 with (pdir / "099_config" / "config.ini").open("w") as f:
     config.write(f)
 
-Log.write("ACCel NEB Step2 terminated normally")
+Log.write("ConfoTS Step2 terminated normally")

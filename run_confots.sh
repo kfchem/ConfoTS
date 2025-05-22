@@ -1,7 +1,7 @@
 #!/bin/bash
 #PBS -N confots_job
 #PBS -q accel
-#PBS -l select=1:ncpus=8:mem=16gb
+#PBS -l select=1:ncpus=0:mem=0gb
 #PBS -l walltime=168:00:00
 
 cd $PBS_O_WORKDIR

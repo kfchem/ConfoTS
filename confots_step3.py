@@ -1,4 +1,4 @@
-__version__ = "2023051801"
+__version__ = "2025052201"
 import configparser
 import json
 import shutil
@@ -20,10 +20,10 @@ acceptable_invalid_atoms = cfg.getint("acceptable_invalid_atoms")
 Log.console(show=cfg.getboolean("console_show"))
 Log.file(pdir.joinpath("_" + Path(__file__).stem).with_suffix(".out"))
 Log.write(f"{Path(__file__).absolute()}: version {__version__}")
-Log.write("Starting ACCeL NEB Step3")
+Log.write("Starting ConfoTS Step3")
 
 if not cfg.getboolean("keep_calc"):
-    Log.write("ACCeL NEB Step3 is deactivated")
+    Log.write("ConfoTS Step3 is deactivated")
     exit()
 
 rxn_atoms = defaultdict(set)
@@ -97,16 +97,8 @@ PlotBox(all_box).diagram(pdir / "310_energy_diagram_dft" / stem_name)
 
 tdir = pdir / "template"
 g16_qsh_file = "g16.qsh"
-if cfg.getboolean("need_hpc"):
-    g16_qsh_file = "g16_hpc.qsh"
 with pdir.joinpath("030_solvent").joinpath("solvent_key").open() as f:
     solvent_key = f.readlines()[0]
-rqbs_port = cfg.getint("rqbs_port")
-if 49152 <= rqbs_port and rqbs_port <= 65535:
-    g16_qsh_file = "g16_rqbs.qsh"
-if cfg.getboolean("no_chk"):
-    g16_qsh_file = g16_qsh_file.split(".")[0] + "_nochk.qsh"
-
 
 irc_file = "g16_irc.gjf"
 irc_qsh_file = g16_qsh_file
@@ -122,14 +114,14 @@ ts_box.write_input(
     arg={"DIRECTION": "forward", "SOLVENT_KEY": solvent_key, "MODEL_OPT": cfg["model_opt"]},
     link=False,
 )
-ts_box.write_input(tdir / irc_qsh_file, pdir / "403_irc_forward_all", link=False, arg={"PORT": rqbs_port})
+ts_box.write_input(tdir / irc_qsh_file, pdir / "403_irc_forward_all", link=False)
 ts_box.write_input(
     tdir / irc_file,
     pdir / "404_irc_reverse_all",
     arg={"DIRECTION": reverse_statement, "SOLVENT_KEY": solvent_key, "MODEL_OPT": cfg["model_opt"]},
     link=False,
 )
-ts_box.write_input(tdir / irc_qsh_file, pdir / "404_irc_reverse_all", link=False, arg={"PORT": rqbs_port})
+ts_box.write_input(tdir / irc_qsh_file, pdir / "404_irc_reverse_all", link=False)
 
 all_box.only_minimum()
 all_box.export_data(pdir / "310_energy_diagram_dft" / stem_name)
@@ -141,15 +133,15 @@ ts_box.write_input(
     pdir / "401_irc_forward",
     arg={"DIRECTION": "forward", "SOLVENT_KEY": solvent_key, "MODEL_OPT": cfg["model_opt"]},
 )
-ts_box.write_input(tdir / irc_qsh_file, pdir / "401_irc_forward", arg={"PORT": rqbs_port})
+ts_box.write_input(tdir / irc_qsh_file, pdir / "401_irc_forward")
 ts_box.write_input(
     tdir / irc_file,
     pdir / "402_irc_reverse",
     arg={"DIRECTION": reverse_statement, "SOLVENT_KEY": solvent_key, "MODEL_OPT": cfg["model_opt"]},
 )
-ts_box.write_input(tdir / irc_qsh_file, pdir / "402_irc_reverse", arg={"PORT": rqbs_port})
+ts_box.write_input(tdir / irc_qsh_file, pdir / "402_irc_reverse")
 
-if cfg.getboolean("need_hpc"):
+if cfg.getboolean("helper_script"):
     shutil.copy(tdir / "qsb", pdir / "401_irc_forward" / "qsb")
     shutil.copy(tdir / "qsb", pdir / "402_irc_reverse" / "qsb")
     shutil.copy(tdir / "qsb", pdir / "403_irc_forward_all" / "qsb")
@@ -158,4 +150,4 @@ if cfg.getboolean("need_hpc"):
 with (pdir / "099_config" / "config.ini").open("w") as f:
     config.write(f)
 
-Log.write("ACCel NEB Step3 terminated normally")
+Log.write("ConfoTS Step3 terminated normally")

@@ -13,18 +13,14 @@ cfg = config["USER"]
 Log.console(show=cfg.getboolean("console_show"))
 Log.file(pdir.joinpath("_" + Path(__file__).stem).with_suffix(".out"))
 Log.write(f"{Path(__file__).absolute()}: version {__version__}")
-Log.write("Starting ACCeL NEB Step4")
+Log.write("Starting ConfoTS Step4")
 
 if not cfg.getboolean("keep_calc"):
-    Log.write("ACCeL NEB Step4 is deactivated")
-    exit()
-
-if cfg.getboolean("need_hpc"):
-    Log.write("ACCeL NEB Step4 is deactivated")
+    Log.write("ConfoTS Step4 is deactivated")
     exit()
 
 if not cfg.getboolean("run_irc"):
-    Log.write("ACCeL NEB Step4 is deactivated")
+    Log.write("ConfoTS Step4 is deactivated")
     exit()
 
 
@@ -38,4 +34,4 @@ else:
 
 dft_box.run()
 
-Log.write("ACCel NEB Step4 terminated normally")
+Log.write("ConfoTS Step4 terminated normally")
