@@ -127,12 +127,12 @@ After execution, the workflow will generate a structured set of output files. Be
 - Python libraries: `rdkit`, `matplotlib`
 
 - External software:
-  - [ORCA](https://orcaforum.kofo.mpg.de/) for NEB calculations
-  - [MacroModel](https://www.schrodinger.com/products/macromodel) for conformer generation
-  - [xtb](https://github.com/grimme-lab/xtb) for NEB calculations and pre-DFT optimization
-  - [Gaussian 16](https://gaussian.com/) for DFT calculations
-  - [OpenPBS](https://www.openpbs.org/) for job scheduling
-  - [RDKit](https://www.rdkit.org/) for initial 3D structure generation
+  - ORCA for NEB calculations
+  - MacroModel for conformer generation
+  - xtb for NEB calculations and pre-DFT optimization
+  - Gaussian 16 for DFT calculations
+  - OpenPBS for job scheduling
+  - RDKit for initial 3D structure generation
 
 ---
 
